@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 require 'guard'
 require 'guard/plugin'
 require 'spoon'
@@ -18,8 +19,9 @@ module Guard
       @options = {
         host: 'localhost',
         port: 9292,
-        server: "WEBrick"
-      }.update(options) { |key, oldval, newval| (newval.nil? || newval.empty?) ? oldval : newval }
+        server: "WEBrick",
+        hide_success: false
+      }.update(options) { |key, oldval, newval| newval.nil? ? oldval : newval }
       @reloaded = false
     end
 
@@ -38,7 +40,7 @@ module Guard
       end
       wait_for_port
       if running?
-        Notifier.notify(@reloaded ? 'reloaded' : 'up')
+        Notifier.notify(@reloaded ? 'reloaded' : 'up') unless @options[:hide_success]
         @reloaded = false
       else
         UI.info "Rack failed to start."
